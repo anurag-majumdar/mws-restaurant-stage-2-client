@@ -342,7 +342,7 @@ natural aspect ratio for the smallest screen */
   display: block;
   margin: 0;
   max-width: 100%;
-  min-height: 116px;
+  min-height: 120px;
 }
 
 #restaurants-list li h3 {
@@ -388,6 +388,14 @@ natural aspect ratio for the smallest screen */
 @media screen and (min-width: 380px) {
   #restaurants-list li {
     min-height: 370px;
+  }
+
+  #restaurants-list .restaurant-img {
+    background: #ccc;
+    display: block;
+    margin: 0;
+    max-width: 100%;
+    min-height: 195px;
   }
 
   #restaurants-list li h3 {
