@@ -391,10 +391,6 @@ natural aspect ratio for the smallest screen */
   }
 
   #restaurants-list .restaurant-img {
-    background: #ccc;
-    display: block;
-    margin: 0;
-    max-width: 100%;
     min-height: 195px;
   }
 
