@@ -1,6 +1,8 @@
 /**
  * Common database helper functions.
  */
+import idb from 'idb';
+
 class DBHelper {
 
   /**
@@ -13,18 +15,67 @@ class DBHelper {
   }
 
   /**
+   * Initialize restaurant-db database in IndexedDB
+   */
+  static idbInit() {
+    return idb.open('restaurant-db', 1, function (upgradeDb) {
+      switch (upgradeDb.oldVersion) {
+        case 0:
+          upgradeDb.createObjectStore('restaurants');
+      }
+    });
+  }
+
+  /**
+   * Fetch restaurants from restaurant-list.
+   */
+  static getRestaurantsFromDb(dbPromise) {
+    return dbPromise.then(function (db) {
+      if (!db) return;
+      let tx = db.transaction('restaurants');
+      let restaurantsStore = tx.objectStore('restaurants');
+      return restaurantsStore.get('restaurant-list');
+    });
+  }
+
+  /**
+   * Update restaurants to restaurant-list.
+   */
+  static updateRestaurantsInDb(restaurants, dbPromise) {
+    return dbPromise.then(function (db) {
+      if (!db) return;
+      let tx = db.transaction('restaurants', 'readwrite');
+      let restaurantsStore = tx.objectStore('restaurants');
+      restaurantsStore.put(restaurants, 'restaurant-list');
+      tx.complete;
+    });
+  }
+
+  /**
    * Fetch all restaurants.
    */
   static fetchRestaurants(callback) {
-    fetch(DBHelper.DATABASE_URL)
-      .then(response => {
-        // Got a success response from server!
+    const dbPromise = DBHelper.idbInit();
+
+    DBHelper.getRestaurantsFromDb(dbPromise)
+      .then((restaurants) => {
+        if (restaurants && restaurants.length > 0) {
+          // Fetched restaurants from restaurant-list
+          callback(null, restaurants);
+        } else {
+          return fetch(DBHelper.DATABASE_URL);
+        }
+      }).then(response => {
+        // Got a success response
+        if (!response) return;
         return response.json();
       }).then(restaurants => {
         // Got the restaurants successfully! Fingers crossed!
+        if (!restaurants) return;
+        DBHelper.updateRestaurantsInDb(restaurants, dbPromise);
         callback(null, restaurants);
       }).catch((error) => {
-        // Oops!. Got an error from server.
+        // Oops!. Got an error from server or some error while operations!
         const errorMessage = (`Request failed. Error message: ${error}`);
         callback(errorMessage, null);
       });
@@ -148,7 +199,11 @@ class DBHelper {
   /**
    * Restaurant image URL.
    */
-  static imageUrlForRestaurant(restaurant) {
+  static webPImageUrlForRestaurant(restaurant) {
+    return (`/img/webp/${restaurant.photograph}.webp`);
+  }
+
+  static jpegImageUrlForRestaurant(restaurant) {
     return (`/img/${restaurant.photograph}.jpg`);
   }
 
@@ -167,3 +222,4 @@ class DBHelper {
   }
 }
 
+export default DBHelper;
