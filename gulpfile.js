@@ -91,13 +91,13 @@ gulp.task('gzip-html', function () {
 });
 
 gulp.task('gzip-css', function () {
-    gulp.src('css/**/*.css')
+    gulp.src('css/**/*.min.css')
         .pipe(gzip())
         .pipe(gulp.dest('css'));
 });
 
 gulp.task('gzip-js', function () {
-    gulp.src('js/**/*.js')
+    gulp.src('js/**/*.min.js')
         .pipe(gzip())
         .pipe(gulp.dest('js'));
 });
