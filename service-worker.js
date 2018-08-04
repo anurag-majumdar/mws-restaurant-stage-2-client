@@ -18,15 +18,15 @@ self.addEventListener('install', (event) => {
   self.skipWaiting();
   event.waitUntil(
     caches.open(staticCacheName)
-      .then((cache) => {
-        cache.addAll([
-          '/',
-          ...cssFiles,
-          ...jsFiles
-        ]);
-      }).catch(() => {
-        console.log('Error caching static assets!');
-      })
+    .then((cache) => {
+      cache.addAll([
+        '/',
+        ...cssFiles,
+        ...jsFiles
+      ]);
+    }).catch(() => {
+      console.log('Error caching static assets!');
+    })
   );
 });
 
@@ -40,12 +40,14 @@ self.addEventListener('activate', (event) => {
         cacheNames.filter((cacheName) => {
           return cacheName.startsWith('restaurant-') && cacheName !== staticCacheName;
         })
-          .map((cacheName) => {
-            return caches.delete(cacheName);
-          })
-      );
+        .map((cacheName) => {
+          return caches.delete(cacheName);
+        })
+      ).catch((error) => {
+        console.log('Some error occurred while removing existing cache!' + error);
+      });
     }).catch((error) => {
-      console.log('Some error occurred!' + error);
+      console.log('Some error occurred while removing existing cache!' + error);
     }));
 });
 
@@ -58,12 +60,11 @@ self.addEventListener('fetch', (event) => {
             return cacheDynamicRequestData(dynamicImagesCacheName, event.request.url, fetchResponse.clone());
           } else if (event.request.url.includes('.html')) {
             return cacheDynamicRequestData(dynamicPagesCacheName, event.request.url, fetchResponse.clone());
-          }
-          else {
+          } else {
             return cacheDynamicRequestData(dynamicMapsCacheName, event.request.url, fetchResponse.clone());
           }
         }).catch((error) => {
-          console.log('Some network error occurred!');
+          console.log('Some error occurred while saving data to dynamic cache!');
         });
     })
   );
@@ -75,6 +76,6 @@ function cacheDynamicRequestData(dynamicCacheName, url, fetchResponse) {
       cache.put(url, fetchResponse.clone());
       return fetchResponse;
     }).catch((error) => {
-      console.log('Some error occurred!');
+      console.log(`Some error occurred while saving data to dynamic cache: ${dynamicCacheName}!`);
     });
 }
