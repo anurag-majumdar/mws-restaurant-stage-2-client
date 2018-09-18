@@ -5,13 +5,13 @@ const dynamicPagesCacheName = 'restaurant-dynamic-pages-v1'
 
 const cssFiles = [
   'https://unpkg.com/leaflet@1.3.1/dist/leaflet.css',
-  'css/styles.min.css'
+  'dist/css/styles.min.css'
 ];
 
 const jsFiles = [
   'https://unpkg.com/leaflet@1.3.1/dist/leaflet.js',
-  'js/index.min.js',
-  'js/restaurant.min.js'
+  'dist/js/index.min.js',
+  'dist/js/restaurant.min.js'
 ];
 
 self.addEventListener('install', (event) => {
@@ -64,7 +64,7 @@ self.addEventListener('fetch', (event) => {
             return cacheDynamicRequestData(dynamicMapsCacheName, event.request.url, fetchResponse.clone());
           }
         }).catch((error) => {
-          console.log('Some error occurred while saving data to dynamic cache!');
+          console.log('Some error occurred while saving to or fetching data from dynamic cache!');
         });
     })
   );
@@ -76,6 +76,6 @@ function cacheDynamicRequestData(dynamicCacheName, url, fetchResponse) {
       cache.put(url, fetchResponse.clone());
       return fetchResponse;
     }).catch((error) => {
-      console.log(`Some error occurred while saving data to dynamic cache: ${dynamicCacheName}!`);
+      console.log(`Some error occurred while saving to or fetching data from dynamic cache: ${dynamicCacheName}!`);
     });
 }

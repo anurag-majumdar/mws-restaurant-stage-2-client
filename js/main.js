@@ -4,10 +4,10 @@ import DBHelper from './dbhelper';
  * Fetch neighborhoods and cuisines as soon as the page is loaded.
  */
 document.addEventListener('DOMContentLoaded', (event) => {
-  registerServiceWorker(); // Register service worker
   initMap(); // added
   fetchNeighborhoods();
   fetchCuisines();
+  registerServiceWorker(); // Register service worker
 
   const neighborhoodsSelect = document.getElementById('neighborhoods-select');
   neighborhoodsSelect.addEventListener('change', updateRestaurants);
